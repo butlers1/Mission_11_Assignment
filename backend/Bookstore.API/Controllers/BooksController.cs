@@ -19,9 +19,15 @@ namespace Bookstore.API.Controllers
         public async Task<IActionResult> GetBooks(
             int pageNum = 1,
             int pageSize = 5,
-            string sortOrder = "asc")
+            string sortOrder = "asc",
+            string? category = null)
         {
             var query = _context.Books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                query = query.Where(b => b.Category == category);
+            }
 
             query = sortOrder == "desc"
                 ? query.OrderByDescending(b => b.Title)
@@ -39,6 +45,18 @@ namespace Bookstore.API.Controllers
                 books,
                 totalCount
             });
+        }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            var categories = await _context.Books
+                .Select(b => b.Category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToListAsync();
+
+            return Ok(categories);
         }
     }
 }
