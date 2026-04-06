@@ -11,6 +11,8 @@ export interface Book {
     price: number;
 }
 
+export type BookFormData = Omit<Book, 'bookId'>;
+
 export interface CartItem {
     book: Book;
     quantity: number;
